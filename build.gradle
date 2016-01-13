@@ -1,6 +1,75 @@
+plugins {
+    id 'base'
+    id 'maven-publish'
+    id 'com.jfrog.bintray' version '1.5'
+    id 'de.undercouch.download' version '2.1.0'
+}
+
+group = 'io.github.ssoloff'
+
+ext {
+    downloadsDir = file("$buildDir/tmp/downloads")
+    jeditPluginDistUrl = "http://downloads.sourceforge.net/project/jedit-plugins/$pluginName/$version/$pluginName-$version-bin.tgz"
+    jeditPluginDistArchive = file("$downloadsDir/$packageName-${version}.tgz")
+    jeditPluginJar = file("$libsDir/$packageName-${version}.jar")
+}
+
+task downloadJEditPlugin {
+    outputs.file jeditPluginJar
+
+    doLast {
+        download {
+            src jeditPluginDistUrl
+            dest jeditPluginDistArchive
+        }
+
+        copy {
+            from tarTree(jeditPluginDistArchive).files
+            into libsDir
+            include "${pluginName}.jar"
+            rename { jeditPluginJar.name }
+        }
+    }
+}
+
 task wrapper(type: Wrapper) {
     description = 'Generates Gradle wrapper files.'
     group = 'Build Setup'
 
     gradleVersion = '2.10'
+}
+
+bintrayUpload.dependsOn downloadJEditPlugin
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            artifact jeditPluginJar
+            artifactId packageName
+        }
+    }
+}
+
+bintray {
+    user = bintrayUser
+    key = bintrayKey
+
+    publish = true
+    publications = ['maven']
+
+    pkg {
+        repo = 'maven'
+        name = "io.github.ssoloff:$packageName"
+        desc = "jEdit $pluginName plugin"
+        websiteUrl = 'https://github.com/ssoloff/jedit-plugins'
+        issueTrackerUrl = 'https://github.com/ssoloff/jedit-plugins/issues'
+        vcsUrl = 'https://github.com/ssoloff/jedit-plugins.git'
+        licenses = ['GPL-2.0']
+        publicDownloadNumbers = true
+
+        version {
+            name = "${project.version}"
+            desc = "jEdit $pluginName plugin ${project.version}"
+        }
+    }
 }
