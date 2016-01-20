@@ -29,6 +29,7 @@ task downloadJEditPluginBinDistZip(type: Download) {
 }
 
 task prepareJEditPluginJar(dependsOn: downloadJEditPluginBinDistTar) {
+    inputs.file downloadJEditPluginBinDistTar.dest
     outputs.file jeditPluginJar
 
     doLast {
