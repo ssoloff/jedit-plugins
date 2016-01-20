@@ -9,8 +9,8 @@ group = 'io.github.ssoloff'
 
 ext {
     downloadsDir = file("$buildDir/tmp/downloads")
-    jeditPluginDistUrl = "http://downloads.sourceforge.net/project/jedit-plugins/$pluginName/$version/$pluginName-$version-bin.tgz"
-    jeditPluginDistArchive = file("$downloadsDir/$packageName-${version}.tgz")
+    jeditPluginBinDistTarUrl = "http://downloads.sourceforge.net/project/jedit-plugins/$pluginName/$version/$pluginName-$version-bin.tgz"
+    jeditPluginBinDistTar = file("$downloadsDir/$packageName-${version}-bin.tar.gz")
     jeditPluginJar = file("$libsDir/$packageName-${version}.jar")
 }
 
@@ -19,12 +19,12 @@ task downloadJEditPlugin {
 
     doLast {
         download {
-            src jeditPluginDistUrl
-            dest jeditPluginDistArchive
+            src jeditPluginBinDistTarUrl
+            dest jeditPluginBinDistTar
         }
 
         copy {
-            from tarTree(jeditPluginDistArchive).files
+            from tarTree(jeditPluginBinDistTar).files
             into libsDir
             include "${pluginName}.jar"
             rename { jeditPluginJar.name }
@@ -46,6 +46,8 @@ publishing {
         maven(MavenPublication) {
             artifact jeditPluginJar
             artifactId packageName
+
+            artifact source: jeditPluginBinDistTar, classifier: 'bin', extension: 'tar.gz'
         }
     }
 }
