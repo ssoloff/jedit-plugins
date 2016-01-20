@@ -11,6 +11,8 @@ ext {
     downloadsDir = file("$buildDir/tmp/downloads")
     jeditPluginBinDistTarUrl = "http://downloads.sourceforge.net/project/jedit-plugins/$pluginName/$version/$pluginName-$version-bin.tgz"
     jeditPluginBinDistTar = file("$downloadsDir/$packageName-${version}-bin.tar.gz")
+    jeditPluginBinDistZipUrl = "http://downloads.sourceforge.net/project/jedit-plugins/$pluginName/$version/$pluginName-$version-bin.zip"
+    jeditPluginBinDistZip = file("$downloadsDir/$packageName-${version}-bin.zip")
     jeditPluginJar = file("$libsDir/$packageName-${version}.jar")
 }
 
@@ -21,6 +23,11 @@ task downloadJEditPlugin {
         download {
             src jeditPluginBinDistTarUrl
             dest jeditPluginBinDistTar
+        }
+
+        download {
+            src jeditPluginBinDistZipUrl
+            dest jeditPluginBinDistZip
         }
 
         copy {
@@ -48,6 +55,7 @@ publishing {
             artifactId packageName
 
             artifact source: jeditPluginBinDistTar, classifier: 'bin', extension: 'tar.gz'
+            artifact source: jeditPluginBinDistZip, classifier: 'bin', extension: 'zip'
         }
     }
 }
