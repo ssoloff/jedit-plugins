@@ -10,6 +10,8 @@ plugins {
 group = 'io.github.ssoloff'
 
 ext {
+    gradleVersion = '2.11'
+
     downloadsDir = file("$buildDir/tmp/downloads")
     jeditPluginBinDistTar = file("$downloadsDir/$packageName-${version}-bin.tar.gz")
     jeditPluginBinDistZip = file("$downloadsDir/$packageName-${version}-bin.zip")
@@ -46,7 +48,7 @@ task wrapper(type: Wrapper) {
     description = 'Generates Gradle wrapper files.'
     group = 'Build Setup'
 
-    gradleVersion = '2.10'
+    gradleVersion = project.gradleVersion
 }
 
 bintrayUpload.dependsOn(
